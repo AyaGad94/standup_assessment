@@ -1,0 +1,81 @@
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-full mx-auto px-4">
+    
+    <div class="mb-8 border-b border-gray-200 pb-5 flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900"><%= @team.name %> Dashboard</h1>
+        <p class="text-sm text-gray-500 mt-1">Status for today: <%= Date.today.strftime("%B %d, %Y") %></p>
+      </div>
+      <div class="text-right">
+        <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Logged in as</span>
+        <p class="text-sm font-semibold text-blue-600"><%= @user.full_name %></p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-100">
+        <div class="px-4 py-5 sm:p-6">
+          <h2 class="text-lg font-medium text-green-700 mb-4 flex items-center">
+            <span class="mr-2">✅</span> Today's Standups
+          </h2>
+          <ul class="divide-y divide-gray-200">
+            <% if @submitted_standups.any? %>
+              <% @submitted_standups.each do |s| %>
+                <li class="py-3">
+                  <p class="text-sm font-bold text-gray-900"><%= s.user.full_name %></p>
+                  <p class="text-sm text-gray-600 italic">"<%= s.plan_for_today %>"</p>
+                </li>
+              <% end %>
+            <% else %>
+              <li class="py-3 text-sm text-gray-400">No updates yet.</li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-100">
+        <div class="px-4 py-5 sm:p-6">
+          <h2 class="text-lg font-medium text-red-600 mb-4 flex items-center">
+            <span class="mr-2">⏳</span> Missing Updates
+          </h2>
+          <div class="flex flex-wrap gap-2">
+            <% if @missing_members.any? %>
+              <% @missing_members.each do |member| %>
+                <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                  <%= member.full_name %>
+                </span>
+              <% end %>
+            <% else %>
+              <p class="text-sm text-gray-400">Everyone is checked in! 🎉</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mt-6">
+      <div class="bg-yellow-50 overflow-hidden shadow rounded-lg border border-yellow-200">
+        <div class="px-4 py-5 sm:p-6">
+          <h2 class="text-lg font-bold text-yellow-800 mb-4 flex items-center">
+            <span class="mr-2">🆘</span> Blockers / Help Needed
+          </h2>
+          <% if @help_needed.any? %>
+            <div class="space-y-4">
+              <% @help_needed.each do |s| %>
+                <div class="bg-white p-4 rounded border border-yellow-300">
+                  <p class="text-sm font-bold text-gray-900"><%= s.user.full_name %></p>
+                  <p class="text-sm text-red-600 mt-1 font-medium"><%= s.blockers %></p>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-sm text-yellow-700">No active blockers for this team.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
