@@ -1,81 +1,122 @@
-<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-full mx-auto px-4">
+<div class="min-h-screen bg-gray-100 py-6">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
     
-    <div class="mb-8 border-b border-gray-200 pb-5 flex justify-between items-center">
+    <%# --- Header Section --- %>
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 flex flex-col sm:flex-row justify-between items-center border border-gray-200">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900"><%= @team.name %> Dashboard</h1>
-        <p class="text-sm text-gray-500 mt-1">Status for today: <%= Date.today.strftime("%B %d, %Y") %></p>
+        <h1 class="text-2xl font-bold text-gray-800"><%= @team.name %> Dashboard</h1>
+        <p class="text-sm text-gray-500"><%= Date.today.strftime("%A, %B %d, %Y") %></p>
       </div>
-      <div class="text-right">
-        <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Logged in as</span>
-        <p class="text-sm font-semibold text-blue-600"><%= current_user.full_name %></p>
+
+      <div class="flex items-center gap-4 mt-4 sm:mt-0">
+        <% unless current_user.standups.today.exists? %>
+          <%= link_to new_standup_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-semibold text-sm shadow-sm transition" do %>
+            + Post Standup
+          <% end %>
+        <% end %>
+        <div class="pl-4 border-l border-gray-200">
+          <p class="text-xs text-gray-400 uppercase font-bold">User</p>
+          <p class="text-sm font-bold text-gray-700"><%= current_user.full_name %></p>
+        </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <%# --- Main Content Grid --- %>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-100">
-        <div class="px-4 py-5 sm:p-6">
-          <h2 class="text-lg font-medium text-green-700 mb-4 flex items-center">
-            <span class="mr-2">✅</span> Today's Standups
-          </h2>
-          <ul class="divide-y divide-gray-200">
-            <% if @submitted_standups.any? %>
-              <% @submitted_standups.each do |s| %>
-                <li class="py-3">
-                  <p class="text-sm font-bold text-gray-900"><%= s.user.full_name %></p>
-                  <p class="text-sm text-gray-600 italic">"<%= s.plan_for_today %>"</p>
-                </li>
-              <% end %>
-            <% else %>
-              <li class="py-3 text-sm text-gray-400">No updates yet.</li>
-            <% end %>
-          </ul>
-        </div>
-      </div>
+      <div class="lg:col-span-2 space-y-6">
+        <%# --- Section: Today's Standups --- %>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
+            <h2 class="font-bold text-gray-700 flex items-center">
+              <span class="mr-2">✅</span> Today's Standups
+            </h2>
+          </div>
+          <div class="p-6">
+            <div class="space-y-10">
+              <% if @submitted_standups.any? %>
+                <% @submitted_standups.each do |s| %>
+                  <div class="relative">
+                    <%# User Info & Actions %>
+                    <div class="flex justify-between items-center mb-4">
+                      <span class="text-sm font-black text-indigo-700 bg-indigo-50 px-4 py-1.5 rounded-full ring-1 ring-indigo-100">
+                        <%= s.user.full_name %>
+                      </span>
+                      
+                      <% if s.user == current_user && s.created_at_date == Date.today %>
+                        <div class="flex gap-4">
+                          <%= link_to "Edit", edit_standup_path(s), class: "text-[11px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-800" %>
+                          <%= link_to "Delete", standup_path(s), data: { turbo_method: :delete, turbo_confirm: "Delete this standup?" }, class: "text-[11px] font-black text-red-500 uppercase tracking-widest hover:text-red-700" %>
+                        </div>
+                      <% end %>
+                    </div>
 
-      <div class="bg-white overflow-hidden shadow rounded-lg border border-gray-100">
-        <div class="px-4 py-5 sm:p-6">
-          <h2 class="text-lg font-medium text-red-600 mb-4 flex items-center">
-            <span class="mr-2">⏳</span> Missing Updates
-          </h2>
-          <div class="flex flex-wrap gap-2">
-            <% if @missing_members.any? %>
-              <% @missing_members.each do |member| %>
-                <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                  <%= member.full_name %>
-                </span>
+                    <%# The "Perfect Shapes" Grid %>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <%# Yesterday: Receded/Completed Style %>
+                      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 transition-hover hover:bg-slate-100">
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                          <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Yesterday</p>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed"><%= s.worked_on_yesterday %></p>
+                      </div>
+
+                      <%# Today: Highlighted/Focus Style %>
+                      <div class="bg-white border-2 border-emerald-500/20 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded-bl-lg uppercase tracking-tighter">Current</div>
+                        <div class="flex items-center gap-2 mb-2">
+                          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Today's Plan</p>
+                        </div>
+                        <p class="text-sm text-gray-800 font-semibold leading-relaxed">"<%= s.plan_for_today %>"</p>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              <% else %>
+                <p class="text-gray-400 text-sm italic text-center py-4">No standups posted yet.</p>
               <% end %>
-            <% else %>
-              <p class="text-sm text-gray-400">Everyone is checked in! 🎉</p>
-            <% end %>
+            </div>
           </div>
         </div>
-      </div>
 
-    </div>
-
-    <div class="mt-6">
-      <div class="bg-yellow-50 overflow-hidden shadow rounded-lg border border-yellow-200">
-        <div class="px-4 py-5 sm:p-6">
-          <h2 class="text-lg font-bold text-yellow-800 mb-4 flex items-center">
-            <span class="mr-2">🆘</span> Blockers / Help Needed
+        <%# --- Section: Help Needed --- %>
+        <div class="bg-red-50 rounded-lg border border-red-100 p-6">
+          <h2 class="font-bold text-red-700 mb-4 flex items-center">
+            <span class="mr-2">🆘</span> Help Needed / Blockers
           </h2>
           <% if @help_needed.any? %>
-            <div class="space-y-4">
+            <div class="space-y-3">
               <% @help_needed.each do |s| %>
-                <div class="bg-white p-4 rounded border border-yellow-300">
-                  <p class="text-sm font-bold text-gray-900"><%= s.user.full_name %></p>
-                  <p class="text-sm text-red-600 mt-1 font-medium"><%= s.blockers %></p>
+                <div class="bg-white p-4 rounded-lg border-l-4 border-red-500 shadow-sm">
+                  <p class="text-xs font-black text-red-600 uppercase mb-1"><%= s.user.full_name %></p>
+                  <p class="text-sm text-gray-800 font-medium"><%= s.blockers %></p>
                 </div>
               <% end %>
             </div>
           <% else %>
-            <p class="text-sm text-yellow-700">No active blockers for this team.</p>
+            <p class="text-sm text-red-400 italic">No blockers reported.</p>
           <% end %>
         </div>
       </div>
-    </div>
 
+      <%# --- Section: Missing Members --- %>
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-fit">
+        <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">⏳ Missing Updates</h2>
+        <div class="flex flex-wrap gap-2">
+          <% if @missing_members.any? %>
+            <% @missing_members.each do |member| %>
+              <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full border border-gray-200">
+                <%= member.full_name %>
+              </span>
+            <% end %>
+          <% else %>
+            <p class="text-xs text-green-600 font-bold bg-green-50 p-2 rounded block w-full text-center">Everyone is here! 🎉</p>
+          <% end %>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>

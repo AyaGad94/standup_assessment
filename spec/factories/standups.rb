@@ -1,10 +1,15 @@
 FactoryBot.define do
   factory :standup do
-    user { nil }
-    worked_on_yesterday { "MyText" }
-    plan_for_today { "MyText" }
-    blockers { "MyText" }
+    # This tells FactoryBot to use your existing :user factory 
+    # to create a user automatically when creating a standup.
+    association :user
+
+    worked_on_yesterday { "Completed the authentication logic and updated the README." }
+    plan_for_today { "Implement the standup creation form and database constraints." }
+    blockers { "Waiting for feedback on the UI layout." }
     needs_help { false }
-    created_at_date { "2026-05-08" }
+    
+    # We use Date.today as the default for tests
+    created_at_date { Date.today }
   end
 end
