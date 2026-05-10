@@ -1,0 +1,39 @@
+<%= form_with(model: standup, local: true, class: "needs-validation") do |f| %>
+  <% if standup.errors.any? %>
+    <div class="alert alert-danger shadow-sm border-start border-4 border-danger">
+      <h6 class="fw-bold"><%= pluralize(standup.errors.count, "error") %> prohibited this standup from being saved:</h6>
+      <ul class="mb-0">
+        <% standup.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <%= f.label :worked_on_yesterday, "What did you work on yesterday? *", class: "form-label fw-bold" %>
+    <%= f.text_area :worked_on_yesterday, class: "form-control rounded-3", rows: 3, placeholder: "Describe your accomplishments..." %>
+  </div>
+
+  <div class="mb-4">
+    <%= f.label :plan_for_today, "What is your plan for today? *", class: "form-label fw-bold" %>
+    <%= f.text_area :plan_for_today, class: "form-control rounded-3", rows: 3, placeholder: "What do you hope to achieve?" %>
+  </div>
+
+  <div class="mb-4">
+    <%= f.label :blockers, "Blockers (Optional)", class: "form-label fw-bold" %>
+    <%= f.text_area :blockers, class: "form-control rounded-3", rows: 2, placeholder: "Anything standing in your way?" %>
+  </div>
+
+  <div class="mb-4 form-check form-switch p-3 bg-light rounded-3">
+    <div class="ms-4">
+      <%= f.check_box :needs_help, class: "form-check-input" %>
+      <%= f.label :needs_help, "I need help / feedback on my blockers", class: "form-check-label fw-bold text-primary" %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 pt-3 border-top">
+    <%= f.submit standup.new_record? ? "Post Standup" : "Update Standup", class: "btn btn-primary px-4 py-2 fw-bold" %>
+    <%= link_to "Cancel", dashboard_path, class: "btn btn-outline-secondary px-4 py-2" %>
+  </div>
+<% end %>
