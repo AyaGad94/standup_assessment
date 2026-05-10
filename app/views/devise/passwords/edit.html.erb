@@ -1,0 +1,70 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow-sm">
+        <div class="card-body p-5">
+          <h1 class="h3 mb-4 font-weight-bold text-center">Reset Your Password</h1>
+
+          <%= form_with(model: resource, local: true, url: user_password_path, method: :put) do |f| %>
+            <% if resource.errors.any? %>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading"><%= pluralize(resource.errors.count, "error") %> occurred:</h5>
+                <ul class="mb-0">
+                  <% resource.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            <% end %>
+
+            <%= f.hidden_field :reset_password_token %>
+
+            <div class="form-group mb-3">
+              <%= f.label :email %>
+              <%= f.email_field :email, class: "form-control", 
+                  placeholder: "Enter your email address", autofocus: true, autocomplete: "email" %>
+            </div>
+
+            <div class="form-group mb-3">
+              <%= f.label :password, "New Password" %>
+              <%= f.password_field :password, class: "form-control #{"is-invalid" if resource.errors[:password].any?}", 
+                  placeholder: "Enter new password (minimum 6 characters)", autocomplete: "new-password" %>
+              <% if resource.errors[:password].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:password].join(", ") %>
+                </div>
+              <% end %>
+              <small class="form-text text-muted">Minimum 6 characters</small>
+            </div>
+
+            <div class="form-group mb-4">
+              <%= f.label :password_confirmation, "Confirm New Password" %>
+              <%= f.password_field :password_confirmation, class: "form-control #{"is-invalid" if resource.errors[:password_confirmation].any?}", 
+                  placeholder: "Confirm new password", autocomplete: "new-password" %>
+              <% if resource.errors[:password_confirmation].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:password_confirmation].join(", ") %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="form-group">
+              <%= f.submit "Reset Password", class: "btn btn-primary w-100 mb-3" %>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="text-center mb-2">
+              <%= link_to "Back to Sign In", new_user_session_path, class: "text-muted" %>
+            </div>
+
+            <div class="text-center">
+              <%= link_to "Create Account", new_user_registration_path, class: "text-muted" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
