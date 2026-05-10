@@ -1,0 +1,108 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-5">
+          <h1 class="h3 mb-4 font-weight-bold text-center">Create Your Account</h1>
+
+          <%= form_with(model: resource, url: registration_path(resource_name), local: true) do |f| %>
+            <% if resource.errors.any? %>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading"><%= pluralize(resource.errors.count, "error") %> prohibited this user from being saved:</h5>
+                <ul class="mb-0">
+                  <% resource.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            <% end %>
+
+            <div class="form-group mb-3">
+              <%= f.label :full_name, "Full Name" %>
+              <%= f.text_field :full_name, class: "form-control #{"is-invalid" if resource.errors[:full_name].any?}", 
+                  placeholder: "Enter your full name", autofocus: true, autocomplete: "name" %>
+              <% if resource.errors[:full_name].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:full_name].join(", ") %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="form-group mb-3">
+              <%= f.label :email %>
+              <%= f.email_field :email, class: "form-control #{"is-invalid" if resource.errors[:email].any?}", 
+                  placeholder: "Enter email address", autocomplete: "email" %>
+              <% if resource.errors[:email].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:email].join(", ") %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="form-group mb-3">
+              <%= f.label :password %>
+              <%= f.password_field :password, class: "form-control #{"is-invalid" if resource.errors[:password].any?}", 
+                  placeholder: "Enter password (minimum 6 characters)", autocomplete: "new-password" %>
+              <% if resource.errors[:password].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:password].join(", ") %>
+                </div>
+              <% end %>
+              <small class="form-text text-muted">Minimum 6 characters</small>
+            </div>
+
+            <div class="form-group mb-3">
+              <%= f.label :password_confirmation %>
+              <%= f.password_field :password_confirmation, class: "form-control #{"is-invalid" if resource.errors[:password_confirmation].any?}", 
+                  placeholder: "Confirm password", autocomplete: "new-password" %>
+              <% if resource.errors[:password_confirmation].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:password_confirmation].join(", ") %>
+                </div>
+              <% end %>
+            </div>
+
+            <hr class="my-4">
+
+            <h5 class="mb-3">Team Assignment</h5>
+
+            <div class="form-group mb-3">
+              <%= f.label :team_id, "Join Existing Team" %>
+              <%= f.select :team_id, options_from_collection_for_select(@teams, :id, :name), 
+                  { prompt: "Select a team or create new one" }, 
+                  class: "form-select #{"is-invalid" if resource.errors[:team_id].any?}" %>
+              <% if resource.errors[:team_id].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:team_id].join(", ") %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="form-group mb-4">
+              <%= f.label :new_team_name, "Or Create New Team" %>
+              <%= f.text_field :new_team_name, class: "form-control", 
+                  placeholder: "Enter team name (optional)" %>
+              <small class="form-text text-muted">If provided, a new team will be created and you'll be added to it.</small>
+            </div>
+
+            <div class="form-group">
+              <%= f.submit "Create Account", class: "btn btn-primary w-100 mb-3" %>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="text-center">
+              <p class="text-muted mb-2">Already have an account?</p>
+              <%= link_to "Sign In", new_user_session_path, class: "btn btn-outline-secondary w-100" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <%= link_to "Back to Home", root_path, class: "text-muted" %>
+      </div>
+    </div>
+  </div>
+</div>

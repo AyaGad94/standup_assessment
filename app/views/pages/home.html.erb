@@ -1,0 +1,69 @@
+<div class="py-5 bg-white rounded-3 shadow-sm border mb-5">
+  <div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold text-dark mb-4">Daily Standups Made Simple</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4 text-muted">Track your team's progress, identify blockers, and keep everyone in sync.</p>
+      <% if !user_signed_in? %>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <%= link_to "Get Started", new_user_registration_path, class: "btn btn-primary btn-lg px-4 gap-3 shadow" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+  <div class="col d-flex align-items-start">
+    <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3 rounded">
+      📝
+    </div>
+    <div>
+      <h3 class="fs-4 fw-bold">Easy Standups</h3>
+      <p class="text-muted">Log your yesterday's work, today's plans, and blockers in seconds.</p>
+    </div>
+  </div>
+  <div class="col d-flex align-items-start">
+    <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3 rounded">
+      👥
+    </div>
+    <div>
+      <h3 class="fs-4 fw-bold">Team Visibility</h3>
+      <p class="text-muted">See your team's progress at a glance. Know who's blocked and who needs help.</p>
+    </div>
+  </div>
+  <div class="col d-flex align-items-start">
+    <div class="icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3 rounded">
+      💬
+    </div>
+    <div>
+      <h3 class="fs-4 fw-bold">Collaborative</h3>
+      <p class="text-muted">Comment on blockers and help your team unblock issues faster.</p>
+    </div>
+  </div>
+</div>
+
+<div class="my-5 p-5 bg-light rounded shadow-sm border">
+  <h3 class="text-center fw-bold mb-5">How It Works</h3>
+  <div class="row g-4 text-center">
+    <div class="col-md-3">
+      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 50px; height: 50px;">1</div>
+      <h5 class="fw-bold">Sign Up</h5>
+      <p class="small text-muted">Create account and join a team</p>
+    </div>
+    <div class="col-md-3">
+      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 50px; height: 50px;">2</div>
+      <h5 class="fw-bold">Daily Standup</h5>
+      <p class="small text-muted">Share what you did today</p>
+    </div>
+    <div class="col-md-3">
+      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 50px; height: 50px;">3</div>
+      <h5 class="fw-bold">Track Blockers</h5>
+      <p class="small text-muted">Flag blockers for help</p>
+    </div>
+    <div class="col-md-3">
+      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 50px; height: 50px;">4</div>
+      <h5 class="fw-bold">Collaborate</h5>
+      <p class="small text-muted">Resolve issues together</p>
+    </div>
+  </div>
+</div>

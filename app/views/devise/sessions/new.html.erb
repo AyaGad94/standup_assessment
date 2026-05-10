@@ -1,0 +1,73 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow-sm">
+        <div class="card-body p-5">
+          <h1 class="h3 mb-4 font-weight-bold text-center">Sign In</h1>
+
+          <%= form_with(model: resource, local: true, url: user_session_path) do |f| %>
+            <% if resource.errors.any? %>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h5 class="alert-heading">Sign in failed</h5>
+                <ul class="mb-0">
+                  <% resource.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            <% end %>
+
+            <div class="form-group mb-3">
+              <%= f.label :email %>
+              <%= f.email_field :email, class: "form-control #{"is-invalid" if resource.errors[:email].any?}", 
+                  placeholder: "Enter email address", autofocus: true, autocomplete: "email" %>
+              <% if resource.errors[:email].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:email].join(", ") %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="form-group mb-4">
+              <%= f.label :password %>
+              <%= f.password_field :password, class: "form-control #{"is-invalid" if resource.errors[:password].any?}", 
+                  placeholder: "Enter password", autocomplete: "current-password" %>
+              <% if resource.errors[:password].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= resource.errors[:password].join(", ") %>
+                </div>
+              <% end %>
+            </div>
+
+            <% if devise_mapping.rememberable? %>
+              <div class="form-check mb-3">
+                <%= f.check_box :remember_me, class: "form-check-input" %>
+                <%= f.label :remember_me, "Remember me", class: "form-check-label" %>
+              </div>
+            <% end %>
+
+            <div class="form-group">
+              <%= f.submit "Sign In", class: "btn btn-primary w-100 mb-3" %>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="text-center mb-3">
+              <%= link_to "Forgot your password?", new_user_password_path, class: "text-muted" %>
+            </div>
+
+            <div class="text-center">
+              <p class="text-muted mb-2">Don't have an account?</p>
+              <%= link_to "Create Account", new_user_registration_path, class: "btn btn-outline-secondary w-100" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <%= link_to "Back to Home", root_path, class: "text-muted" %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,10 +1,9 @@
 class DashboardsController < ApplicationController
-  
   def show
-    @user = User.first 
-    @team = @user.team 
-    @submitted_standups = @team.standups.today
-    @missing_members = @team.missing_members_today
-    @help_needed = @team.standups.needs_help
+
+    @team = current_user.team 
+    @submitted_standups = @team.submitted_standups_today
+    @missing_members    = @team.missing_members_today
+    @help_needed        = @team.help_needed_blockers
   end
 end
