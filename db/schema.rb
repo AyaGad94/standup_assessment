@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_10_225651) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_125809) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,12 +29,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_10_225651) do
     t.text "blockers"
     t.datetime "created_at", null: false
     t.date "created_at_date"
+    t.datetime "discarded_at"
     t.boolean "needs_help"
     t.text "plan_for_today"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.text "worked_on_yesterday"
-    t.index ["user_id", "created_at_date"], name: "index_standups_on_user_id_and_created_at_date", unique: true
+    t.index ["discarded_at"], name: "index_standups_on_discarded_at"
+    t.index ["user_id", "created_at_date"], name: "index_standups_on_user_and_date_uniqueness", unique: true, where: "(discarded_at IS NULL)"
     t.index ["user_id"], name: "index_standups_on_user_id"
   end
 
@@ -55,6 +57,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_10_225651) do
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.integer "role", default: 0
     t.bigint "team_id", null: false
     t.datetime "updated_at", null: false
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

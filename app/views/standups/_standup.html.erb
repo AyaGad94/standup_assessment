@@ -1,0 +1,61 @@
+<%# app/views/standups/_standup.html.erb %>
+<%# This partial handles the visual "Shape" of a standup for the dashboard and real-time broadcasts %>
+
+<div id="<%= dom_id standup %>" class="relative group border-b border-gray-100 last:border-0 pb-10 last:pb-0">
+  
+  <%# User Info & Actions %>
+  <div class="flex justify-between items-center mb-4">
+    <div class="flex items-center gap-2">
+      <span class="text-sm font-black text-indigo-700 bg-indigo-50 px-4 py-1.5 rounded-full ring-1 ring-indigo-100">
+        <%= standup.user.full_name %>
+      </span>
+    </div>
+    
+    <div class="flex gap-4 items-center">
+      <%# Defensive check for current_user to prevent Devise/Warden errors during background broadcasts %>
+      <% if defined?(current_user) && current_user.present? && standup.user == current_user && standup.created_at_date == Date.today %>
+        <%= link_to "Edit", edit_standup_path(standup), 
+            class: "text-[11px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-800 transition" %>
+        
+        <%= link_to "Delete", standup_path(standup), 
+            data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, 
+            class: "text-[11px] font-black text-red-500 uppercase tracking-widest hover:text-red-700 transition" %>
+      <% end %>
+
+      <%= link_to "Discuss", standup_path(standup), 
+          class: "text-[11px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-600 transition" %>
+    </div>
+  </div>
+
+  <%# Content Grid %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <%# Yesterday Section %>
+    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Yesterday</p>
+      </div>
+      <p class="text-sm text-slate-600 leading-relaxed">
+        <%= standup.worked_on_yesterday %>
+      </p>
+    </div>
+
+    <%# Today Section %>
+    <div class="bg-white border-2 border-emerald-500/20 rounded-xl p-4 shadow-sm relative">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Today's Plan</p>
+      </div>
+      <p class="text-sm text-gray-800 font-semibold leading-relaxed">
+        "<%= standup.plan_for_today %>"
+      </p>
+    </div>
+  </div>
+
+  <%# Blocker Badge (Optional display if present) %>
+  <% if standup.needs_help && standup.blockers.present? %>
+    <div class="mt-3 px-4 py-2 bg-red-50 border border-red-100 rounded-lg">
+      <p class="text-[10px] font-black text-red-600 uppercase tracking-tighter">Blocker: <%= standup.blockers %></p>
+    </div>
+  <% end %>
+</div>

@@ -1,15 +1,23 @@
 class StandupsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_standup, only: [:edit, :update, :destroy]
+  before_action :set_standup, only: [:show, :edit, :update, :destroy]
   before_action :authorize_standup_owner!, only: [:edit, :update, :destroy]
+  
+  def show
+    # Optimized with .includes(:user) to prevent N+1 queries
+    @comments = @standup.comments.includes(:user).order(created_at: :asc)
+    @new_comment = Comment.new
+  end
+
 
   def new
-    if current_user.standups.today.exists?
-      redirect_to dashboard_path, alert: "You have already submitted a standup for today."
-    else
-      @standup = current_user.standups.new
-    end
+  # Add .kept here so it ignores discarded standups
+  if current_user.standups.today.kept.exists?
+    redirect_to dashboard_path, alert: "You have already submitted a standup for today."
+  else
+    @standup = current_user.standups.new
   end
+end
 
   def create
     @standup = current_user.standups.new(standup_params)
@@ -33,18 +41,28 @@ class StandupsController < ApplicationController
   end
 
   def destroy
-    @standup.destroy
+    @standup.discard
     redirect_to dashboard_path, notice: "Standup was deleted."
   end
 
   private
 
   def set_standup
-    @standup = Standup.find(params[:id])
+    @standup = Standup.find_by(id: params[:id])
+    
+    if @standup.nil?
+      redirect_to dashboard_path, alert: "Standup not found."
+      return 
+    end
+
+    # Authorization: Team isolation
+    unless @standup.user.team == current_user.team
+      redirect_to dashboard_path, alert: "You are not authorized to view that standup."
+    end
   end
 
   def authorize_standup_owner!
-
+    # Authorization: Ownership + Same-day edit window
     unless @standup.user == current_user && @standup.created_at_date == Date.today
       redirect_to dashboard_path, alert: "You are not authorized to edit this standup (Same-day edit window only)."
     end

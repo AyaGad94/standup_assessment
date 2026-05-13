@@ -1,0 +1,16 @@
+<%# app/views/comments/_comment.html.erb %>
+<div class="flex gap-4 py-4 border-b border-gray-100 last:border-0">
+  <div class="flex-1">
+    <div class="flex justify-between items-center mb-1">
+      <%# This shows the full name %>
+      <span class="text-xs font-bold text-gray-900"><%= comment.user.full_name %></span>
+      <span class="text-[10px] text-gray-400 font-medium">
+        <%= time_ago_in_words(comment.created_at) %> ago
+      </span>
+    </div>
+    
+    <p class="text-sm text-gray-600 leading-relaxed">
+      <%= comment.body %>
+    </p>
+  </div>
+</div>

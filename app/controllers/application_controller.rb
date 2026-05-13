@@ -1,8 +1,9 @@
 
 class ApplicationController < ActionController::Base
+  protect_from_forgery with: :exception, unless: -> { request.format.json? }
+  include Pagy::Backend
   include Pundit::Authorization
-  
-  before_action :authenticate_user!
+  before_action :authenticate_user!, unless: -> { request.format.json? }
   before_action :configure_permitted_parameters, if: :devise_controller?
   
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -13,8 +14,8 @@ class ApplicationController < ActionController::Base
   private
  
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:full_name, :team_id])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:full_name])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:full_name, :team_id, :role, :new_team_name])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:full_name, :role])
   end
  
   def user_not_authorized

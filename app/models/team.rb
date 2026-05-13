@@ -19,7 +19,9 @@ class Team < ApplicationRecord
   end
  
   def missing_members_today
-    submitted_user_ids = standups.where(created_at_date: Date.today).pluck(:user_id).uniq
+    # We use .kept here so that people who "deleted" their standup 
+    # appear back in the missing list
+    submitted_user_ids = standups.today.kept.pluck(:user_id).uniq
     
     if submitted_user_ids.any?
       active_members.where.not(id: submitted_user_ids)
@@ -28,11 +30,15 @@ class Team < ApplicationRecord
     end
   end
  
+  
   def submitted_standups_today
-    standups.where(created_at_date: Date.today)
+    # Added .kept to filter out soft-deleted standups
+    standups.today.kept
   end
  
+  
   def help_needed_blockers
-    standups.where(created_at_date: Date.today, needs_help: true)
+    # Added .kept to filter out soft-deleted blockers
+    standups.today.kept.needs_help
   end
 end

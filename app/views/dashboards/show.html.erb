@@ -1,23 +1,33 @@
+<%# 1. Turbo Stream listener for real-time updates %>
+<%= turbo_stream_from "team_#{@team.id}_standups" %>
+
 <div class="min-h-screen bg-gray-100 py-6">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
     
-    <%# --- Header Section --- %>
-    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 flex flex-col sm:flex-row justify-between items-center border border-gray-200">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-800"><%= @team.name %> Dashboard</h1>
-        <p class="text-sm text-gray-500"><%= Date.today.strftime("%A, %B %d, %Y") %></p>
-      </div>
-
-      <div class="flex items-center gap-4 mt-4 sm:mt-0">
-        <% unless current_user.standups.today.exists? %>
-          <%= link_to new_standup_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-semibold text-sm shadow-sm transition" do %>
-            + Post Standup
-          <% end %>
-        <% end %>
-        <div class="pl-4 border-l border-gray-200">
-          <p class="text-xs text-gray-400 uppercase font-bold">User</p>
-          <p class="text-sm font-bold text-gray-700"><%= current_user.full_name %></p>
+    <%# --- Header Section with Completion Stats --- %>
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6 border border-gray-200">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800"><%= @team.name %> Dashboard</h1>
+          <p class="text-sm text-gray-500"><%= Date.today.strftime("%A, %B %d, %Y") %></p>
         </div>
+
+    <div class="flex items-center gap-6 mt-4 md:mt-0">
+  <% unless current_user.standups.today.kept.exists? %>
+    <%= link_to new_standup_path, class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition duration-150 ease-in-out flex items-center" do %>
+      <span class="mr-1">+</span> Post Standup
+    <% end %>
+  <% end %>
+  
+  <div class="text-right border-l pl-6 border-gray-200">
+    <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Team Progress</p>
+    <p class="text-lg font-bold text-blue-600"><%= @submitted_count %> / <%= @total_count %></p>
+  </div>
+</div>
+      
+      <%# Progress Bar %>
+      <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+        <div class="bg-blue-500 h-full transition-all duration-500" style="width: <%= @total_count > 0 ? (@submitted_count.to_f / @total_count * 100).round : 0 %>%"></div>
       </div>
     </div>
 
@@ -29,51 +39,27 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <div class="px-6 py-4 border-b border-gray-200 bg-gray-50/50">
             <h2 class="font-bold text-gray-700 flex items-center">
-              <span class="mr-2">✅</span> Today's Standups
+              <span class="mr-2 text-green-500">✅</span> Today's Standups
             </h2>
           </div>
           <div class="p-6">
-            <div class="space-y-10">
+            <%# target ID for Turbo Broadcasts %>
+            <div id="standups_list" class="space-y-10">
               <% if @submitted_standups.any? %>
-                <% @submitted_standups.each do |s| %>
-                  <div class="relative">
-                    <%# User Info & Actions %>
-                    <div class="flex justify-between items-center mb-4">
-                      <span class="text-sm font-black text-indigo-700 bg-indigo-50 px-4 py-1.5 rounded-full ring-1 ring-indigo-100">
-                        <%= s.user.full_name %>
-                      </span>
-                      
-                      <% if s.user == current_user && s.created_at_date == Date.today %>
-                        <div class="flex gap-4">
-                          <%= link_to "Edit", edit_standup_path(s), class: "text-[11px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-800" %>
-                          <%= link_to "Delete", standup_path(s), data: { turbo_method: :delete, turbo_confirm: "Delete this standup?" }, class: "text-[11px] font-black text-red-500 uppercase tracking-widest hover:text-red-700" %>
-                        </div>
-                      <% end %>
-                    </div>
-
-                    <%# The "Perfect Shapes" Grid %>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <%# Yesterday: Receded/Completed Style %>
-                      <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 transition-hover hover:bg-slate-100">
-                        <div class="flex items-center gap-2 mb-2">
-                          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                          <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Yesterday</p>
-                        </div>
-                        <p class="text-sm text-slate-600 leading-relaxed"><%= s.worked_on_yesterday %></p>
-                      </div>
-
-                      <%# Today: Highlighted/Focus Style %>
-                      <div class="bg-white border-2 border-emerald-500/20 rounded-xl p-4 shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 right-0 bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded-bl-lg uppercase tracking-tighter">Current</div>
-                        <div class="flex items-center gap-2 mb-2">
-                          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                          <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Today's Plan</p>
-                        </div>
-                        <p class="text-sm text-gray-800 font-semibold leading-relaxed">"<%= s.plan_for_today %>"</p>
-                      </div>
+                <%= render @submitted_standups %> 
+                
+                <%# --- MERGED PAGINATION SECTION --- %>
+                <div class="mt-10 py-6 border-t border-gray-200">
+                  <div class="flex flex-col items-center gap-2">
+                    <p class="text-xs text-gray-500 italic">
+                      Showing standups <%== pagy_info(@pagy) %>
+                    </p>
+                    <div class="pagy-bootstrap-container">
+                      <%== pagy_bootstrap_nav(@pagy) %>
                     </div>
                   </div>
-                <% end %>
+                </div>
+
               <% else %>
                 <p class="text-gray-400 text-sm italic text-center py-4">No standups posted yet.</p>
               <% end %>
@@ -89,9 +75,12 @@
           <% if @help_needed.any? %>
             <div class="space-y-3">
               <% @help_needed.each do |s| %>
-                <div class="bg-white p-4 rounded-lg border-l-4 border-red-500 shadow-sm">
-                  <p class="text-xs font-black text-red-600 uppercase mb-1"><%= s.user.full_name %></p>
-                  <p class="text-sm text-gray-800 font-medium"><%= s.blockers %></p>
+                <div class="bg-white p-4 rounded-lg border-l-4 border-red-500 shadow-sm flex justify-between items-center">
+                  <div>
+                    <p class="text-xs font-black text-red-600 uppercase mb-1"><%= s.user.full_name %></p>
+                    <p class="text-sm text-gray-800 font-medium"><%= s.blockers %></p>
+                  </div>
+                  <%= link_to "Discuss", standup_path(s), class: "text-xs bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold hover:bg-red-200" %>
                 </div>
               <% end %>
             </div>
@@ -101,19 +90,47 @@
         </div>
       </div>
 
-      <%# --- Section: Missing Members --- %>
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-fit">
-        <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">⏳ Missing Updates</h2>
-        <div class="flex flex-wrap gap-2">
-          <% if @missing_members.any? %>
-            <% @missing_members.each do |member| %>
-              <span class="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold rounded-full border border-gray-200">
-                <%= member.full_name %>
-              </span>
+      <%# --- Sidebar: Manager & Team Stats --- %>
+      <div class="space-y-6">
+        
+        <%# --- Section: MANAGER INSIGHTS (Only for Roles: Manager) --- %>
+        <% if current_user.manager? %>
+          <div class="bg-blue-50 rounded-lg shadow-sm border border-blue-200 p-6">
+            <h2 class="text-blue-700 font-bold flex items-center mb-2">
+              <span class="mr-2">📊</span> Manager Insights
+            </h2>
+            <p class="text-xs text-blue-600 mb-4">A daily digest email was generated for this team lead account.</p>
+            
+            <div class="pt-4 border-t border-blue-100">
+              <h3 class="text-xs font-black text-blue-400 uppercase tracking-widest mb-3">⚠️ Missing Today (<%= @missing_members.count %>)</h3>
+              <% if @missing_members.any? %>
+                <ul class="space-y-2">
+                  <% @missing_members.each do |member| %>
+                    <li class="flex items-center text-sm text-gray-700">
+                      <span class="h-1.5 w-1.5 rounded-full bg-orange-400 mr-2"></span>
+                      <%= member.full_name %>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <p class="text-xs text-green-600 font-bold">100% Participation! 🎉</p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <%# --- Section: Team Members (Visible to Everyone) --- %>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">👥 Team Roster</h2>
+          <div class="flex flex-wrap gap-2">
+            <% if @team.users.any? %>
+              <% @team.users.each do |user| %>
+                <span class="px-3 py-1 <%= @submitted_standups.any? { |s| s.user_id == user.id } ? 'bg-green-50 text-green-700 border-green-200' : 'bg-gray-50 text-gray-500 border-gray-200' %> text-xs font-bold rounded-full border">
+                  <%= user.full_name %>
+                </span>
+              <% end %>
             <% end %>
-          <% else %>
-            <p class="text-xs text-green-600 font-bold bg-green-50 p-2 rounded block w-full text-center">Everyone is here! 🎉</p>
-          <% end %>
+          </div>
         </div>
       </div>
 
