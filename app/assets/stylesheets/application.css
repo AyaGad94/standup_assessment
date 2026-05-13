@@ -8,3 +8,19 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+/* Simple styling for Pagy if the tailwind config is missing */
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+}
+.pagination a, .pagination span {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: #374151;
+}
+.pagination .active {
+  background-color: #2563eb;
+  color: white;
+}

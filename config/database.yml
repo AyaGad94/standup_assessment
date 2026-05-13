@@ -1,22 +1,23 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: localhost
-  username: postgres
-  password: postgres
-  port: 5433  
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("DATABASE_HOST") { "127.0.0.1" } %>
+  username: <%= ENV.fetch("POSTGRES_USER") { "postgres" } %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD") { "postgres" } %>
+  port: <%= ENV.fetch("DATABASE_PORT") { 5433 } %> 
 
 development:
   <<: *default
   database: team_standup_development
+  host: 127.0.0.1
+  port: 5433
 
 test:
-  <<: *default
+  adapter: postgresql
+  encoding: unicode
   database: team_standup_test
-
-production:
-  <<: *default
-  database: team_standup_production
-  username: team_standup
-  password: <%= ENV["TEAM_STANDUP_DATABASE_PASSWORD"] %>
+  username: postgres
+  password: postgres
+  host: 127.0.0.1
+  port: 5433

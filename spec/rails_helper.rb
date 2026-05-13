@@ -1,5 +1,6 @@
 # spec/rails_helper.rb
 require 'spec_helper'
+ENV['VIPS_WARNING'] = '0'
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 
@@ -11,13 +12,6 @@ require 'shoulda/matchers'
 
 # Add additional requires below this line. Rails is not loaded until this point!
 # Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
-
-begin
-  ActiveRecord::Migration.maintain_test_schema!
-rescue ActiveRecord::PendingMigrationError => e
-  puts e.to_s.strip
-  exit 1
-end
 
 RSpec.configure do |config|
   # Use plural fixture_paths for Rails 7+

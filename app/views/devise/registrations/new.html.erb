@@ -63,6 +63,13 @@
               <% end %>
             </div>
 
+            <div class="form-group mb-3">
+              <%= f.label :role, "Account Type" %>
+              <%= f.select :role, User.roles.keys.map { |role| [role.titleize, role] }, {}, 
+                  class: "form-select #{"is-invalid" if resource.errors[:role].any?}" %>
+              <small class="form-text text-muted">Select 'Manager' if you lead this team.</small>
+            </div>
+
             <hr class="my-4">
 
             <h5 class="mb-3">Team Assignment</h5>

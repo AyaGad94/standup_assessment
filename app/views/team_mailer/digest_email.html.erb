@@ -1,0 +1,17 @@
+<h2>Daily Standup Summary for <%= @team.name %></h2>
+<p>Hello <%= @manager.full_name %>,</p>
+
+<% if @standups.any? %>
+  <% @standups.each do |standup| %>
+    <div style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+      <strong><%= standup.user.full_name %></strong><br>
+      <strong>Yesterday:</strong> <%= standup.worked_on_yesterday %><br>
+      <strong>Today:</strong> <%= standup.plan_for_today %><br>
+      <% if standup.needs_help %>
+        <span style="color: red;"><strong>Blocker:</strong> <%= standup.blockers %></span>
+      <% end %>
+    </div>
+  <% end %>
+<% else %>
+  <p>No standups were submitted today.</p>
+<% end %>
