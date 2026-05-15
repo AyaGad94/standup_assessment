@@ -7,7 +7,7 @@ gem "propshaft"
 gem "devise"
 gem "pundit"
 gem "discard", "~> 1.3"
-gem 'pagy', '~> 9.3'
+gem 'pagy', '~> 43.5'
 
 # Hotwire & Styling
 gem "importmap-rails"
